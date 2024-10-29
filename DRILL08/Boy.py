@@ -87,6 +87,11 @@ class Run:
     def do(boy):
         boy.x+=boy.dir*5
         boy.frame = (boy.frame +1) % 8
+
+        if boy.x < 30:
+            boy.x=30
+        if boy.x > 770:
+            boy.x =770
         pass
     @staticmethod
     def draw(boy):
@@ -110,10 +115,14 @@ class AutoRun:
 
     @staticmethod
     def do(boy):
-        boy.x += boy.dir * 13
+        boy.x += boy.dir * 15
         boy.frame = (boy.frame + 1) % 8
 
         if get_time() - boy.start_time > 5:
+            if boy.dir == 1:
+                boy.action = 3
+            elif boy.dir == -1:
+                boy.action = 2
             boy.state_machine.add_event(('TIME_OUT', 0))
 
         if boy.x < 50:  # 왼쪽 끝에 도달햇음 오른쪽으로
@@ -153,7 +162,7 @@ class Boy:
                 # run 상태에서 어떤 이벤트가 들어와도 처리핮 않겠다.. 라는 의미
                 Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep, a_down: AutoRun},
                 Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle},
-                AutoRun: { }
+                AutoRun: {time_out : Idle , right_down :Run, left_down : Run, right_up: Run, left_up: Run}
             }
         )
 
