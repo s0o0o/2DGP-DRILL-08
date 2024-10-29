@@ -102,6 +102,7 @@ class AutoRun:
         boy.dir = 1
         boy.frame = 0
         boy.start_time = get_time()
+        boy.action = 1
 
     @staticmethod
     def exit(boy, e):
@@ -117,8 +118,10 @@ class AutoRun:
 
         if boy.x < 50:  # 왼쪽 끝에 도달햇음 오른쪽으로
             boy.dir = 1
+            boy.action = 1
         elif boy.x > 750:  # 오른쪽 끝 도달면 왼쪽
             boy.dir = -1
+            boy.action = 0
 
 
 
