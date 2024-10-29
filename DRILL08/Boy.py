@@ -1,8 +1,8 @@
-from unittest.mock import right
 
 from pico2d import load_image, get_time
+from sdl2 import SDL_KEYDOWN, SDLK_a
 
-from state_machine import StateMachine, time_out, space_down, right_down, right_up, left_down, left_up, start_event
+from state_machine import StateMachine, time_out, space_down, right_down, right_up, left_down, left_up, start_event, a_down
 
 
 # 상태를 클래스를 통해 정의
@@ -15,6 +15,8 @@ class Idle:
         elif right_up(e) or left_down(e) or start_event(e):
             boy.action = 3
             boy.face_dir = 1
+        elif a_down(e):
+            boy.state_machine.add_event(('A_KEY_PRESSED', 0))
 
         boy.dir = 0 # 정지상태이다..
         boy.frame = 0
@@ -93,10 +95,13 @@ class Run:
             boy.x,boy.y
         )
 
+
 class AutoRun:
     @staticmethod
     def enter(boy, e):
-       pass
+        boy.dir = 1
+        boy.frame = 0
+        boy.start_time = get_time()
 
     @staticmethod
     def exit(boy, e):
@@ -104,12 +109,28 @@ class AutoRun:
 
     @staticmethod
     def do(boy):
+        boy.x += boy.dir * 13
+        boy.frame = (boy.frame + 1) % 8
 
-        pass
+        if get_time() - boy.start_time > 5:
+            boy.state_machine.add_event(('TIME_OUT', 0))
+
+        if boy.x < 50:  # 왼쪽 끝에 도달햇음 오른쪽으로
+            boy.dir = 1
+        elif boy.x > 750:  # 오른쪽 끝 도달면 왼쪽
+            boy.dir = -1
+
+
 
     @staticmethod
     def draw(boy):
+        boy.image.clip_draw(
+            boy.frame * 100, boy.action * 100, 100, 100,
+            boy.x- 10, boy.y +20,200,200
+        )
         pass
+
+
 from state_machine import StateMachine, space_down
 
 
@@ -127,9 +148,9 @@ class Boy:
                 # key = 현재상태, value = dictionary로..
                 Run: {right_down: Idle, left_down: Idle, right_up: Idle, left_up: Idle},
                 # run 상태에서 어떤 이벤트가 들어와도 처리핮 않겠다.. 라는 의미
-                Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep},
-                Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle}
-
+                Idle: {right_down: Run, left_down: Run, left_up: Run, right_up: Run, time_out: Sleep, a_down: AutoRun},
+                Sleep: {right_down: Run, left_down: Run, right_up: Run, left_up: Run, space_down: Idle},
+                AutoRun: { }
             }
         )
 

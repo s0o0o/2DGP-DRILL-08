@@ -16,8 +16,6 @@ def handle_events():
             running = False
         elif event.type == SDL_KEYDOWN and event.key == SDLK_ESCAPE:
             running = False
-        elif event.type == SDL_KEYDOWN and event.key == SDLK_a:
-           print('a눌림')
         else:
             if event.type in (SDL_KEYDOWN, SDL_KEYUP):
                 boy.handle_event(event) # input 이벤트를 boy에게 전달하고 있다..
