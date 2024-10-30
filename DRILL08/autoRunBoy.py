@@ -38,7 +38,6 @@ def reset_world():
     world.append(boy)
 
 
-
 def update_world():
     for o in world:
         o.update()

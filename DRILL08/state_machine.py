@@ -80,4 +80,3 @@ class StateMachine:
         self.transitions = transitions
         pass
 
-
